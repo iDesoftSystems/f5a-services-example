@@ -1,3 +1,4 @@
+use f5a_services::handlers;
 use std::net::SocketAddr;
 
 #[tokio::main]
@@ -8,7 +9,7 @@ async fn main() {
         .await
         .unwrap_or_else(|e| panic!("failed to bind to {}: {}", addr, e));
 
-    let router = axum::Router::new();
+    let router = axum::Router::new().route("/", axum::routing::get(handlers::root_handler));
 
     println!("Listening on {}", listener.local_addr().unwrap());
 
