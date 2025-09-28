@@ -1,0 +1,15 @@
+services:
+  db:
+    image: "mysql:8.0"
+    volumes:
+      - "./.docker/db/data:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+    networks:
+      - f5anet
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: f5a_db
+
+networks:
+  f5anet:
