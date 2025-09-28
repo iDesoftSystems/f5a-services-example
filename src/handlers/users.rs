@@ -1,8 +1,15 @@
+use crate::om::{CreateUserParams, UserCreated};
 use crate::pagination::Pagination;
+use axum::Json;
 use axum::extract::{Path, Query};
 use axum::response::IntoResponse;
 
-pub async fn create_user() -> impl IntoResponse {}
+pub async fn create_user(Json(payload): Json<CreateUserParams>) -> impl IntoResponse {
+    println!("received payload: {:?}", payload);
+
+    Json(UserCreated { id: 1 })
+}
+
 pub async fn read_users(Query(pagination): Query<Pagination>) -> impl IntoResponse {
     format!(
         "fetching users on page: {} with page size: {}",
