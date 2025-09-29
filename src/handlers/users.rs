@@ -1,10 +1,14 @@
+use crate::context::AppContext;
 use crate::om::{CreateUserParams, UserCreated};
 use crate::pagination::Pagination;
 use axum::Json;
-use axum::extract::{Path, Query};
+use axum::extract::{Path, Query, State};
 use axum::response::IntoResponse;
 
-pub async fn create_user(Json(payload): Json<CreateUserParams>) -> impl IntoResponse {
+pub async fn create_user(
+    State(ctx): State<AppContext>,
+    Json(payload): Json<CreateUserParams>,
+) -> impl IntoResponse {
     println!("received payload: {:?}", payload);
 
     Json(UserCreated { id: 1 })
