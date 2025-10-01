@@ -11,9 +11,11 @@ tokio = { version = "1.47.1", features = ["rt-multi-thread", "macros", "net"] }
 axum = { version = "0.8.4" }
 serde = { version = "1.0.228", features = ["derive"] }
 sea-orm = { version = "1.1", features = ["sqlx-mysql", "runtime-tokio-rustls"] }
+dotenvy = "0.15.7"
 
 [dependencies]
 tokio = { workspace = true }
 axum = { workspace = true }
 serde = { workspace = true }
 sea-orm = { workspace = true }
+dotenvy = { workspace = true }

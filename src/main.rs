@@ -3,6 +3,8 @@ use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() {
+    let _ = dotenvy::dotenv();
+
     let port = 8080;
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     let listener = tokio::net::TcpListener::bind(addr)

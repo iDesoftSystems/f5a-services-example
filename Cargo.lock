@@ -839,6 +839,7 @@ name = "f5a_services"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "dotenvy",
  "sea-orm",
  "serde",
  "tokio",
