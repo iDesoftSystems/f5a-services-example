@@ -8,5 +8,5 @@ pub struct CreateUserParams {
 
 #[derive(Serialize)]
 pub struct UserCreated {
-    pub id: u32,
+    pub id: i32,
 }

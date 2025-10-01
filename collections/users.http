@@ -1,0 +1,11 @@
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### create a new user
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+    "name": "iDesoft Systems",
+    "username": "idesoftd"
+}
