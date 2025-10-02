@@ -13,3 +13,7 @@ Content-Type: {{contentType}}
 ### read all users with limits
 GET {{baseUrl}}/users?page=0&page_size=3
 Content-Type: {{contentType}}
+
+### read one user
+GET {{baseUrl}}/users/1
+Content-Type: {{contentType}}

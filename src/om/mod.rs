@@ -20,3 +20,12 @@ pub struct UserPage {
     pub disabled: bool,
     pub created_at: DateTime<Utc>,
 }
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserDetail {
+    pub id: i32,
+    pub username: String,
+    pub disabled: bool,
+    pub created_at: DateTime<Utc>,
+}

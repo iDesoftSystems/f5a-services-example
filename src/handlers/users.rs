@@ -1,6 +1,6 @@
 use crate::context::AppContext;
 use crate::error::ApiError;
-use crate::om::{CreateUserParams, UserCreated, UserPage};
+use crate::om::{CreateUserParams, UserCreated, UserDetail, UserPage};
 use crate::pagination::Pagination;
 use axum::Json;
 use axum::extract::{Path, Query, State};
@@ -53,8 +53,21 @@ pub async fn read_users(
     Ok(Json(users_page))
 }
 
-pub async fn read_user(Path(user_id): Path<u32>) -> impl IntoResponse {
-    format!("fetching user with id: {}", user_id)
+pub async fn read_user(
+    State(ctx): State<AppContext>,
+    Path(user_id): Path<i32>,
+) -> Result<Json<UserDetail>, ApiError> {
+    let user_model = schemas::user::Entity::find_by_id(user_id)
+        .one(&ctx.conn)
+        .await?
+        .ok_or(ApiError::NotFound)?;
+
+    Ok(Json(UserDetail {
+        id: user_model.id,
+        username: user_model.username,
+        disabled: user_model.disabled.is_positive(),
+        created_at: user_model.created_at.and_utc(),
+    }))
 }
 
 pub async fn update_user() -> impl IntoResponse {}
