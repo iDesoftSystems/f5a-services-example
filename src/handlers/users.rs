@@ -7,7 +7,8 @@ use axum::extract::{Path, Query, State};
 use axum::response::{IntoResponse, NoContent};
 use sea_orm::sqlx::types::chrono::Utc;
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, EntityTrait, IntoActiveModel, PaginatorTrait, TryIntoModel,
+    ActiveModelTrait, ActiveValue, EntityTrait, IntoActiveModel, ModelTrait, PaginatorTrait,
+    TryIntoModel,
 };
 
 pub async fn create_user(
@@ -91,5 +92,18 @@ pub async fn update_user(
     Ok(NoContent)
 }
 
-pub async fn delete_user() -> impl IntoResponse {}
+pub async fn delete_user(
+    State(ctx): State<AppContext>,
+    Path(user_id): Path<i32>,
+) -> Result<NoContent, ApiError> {
+    let user_model = schemas::user::Entity::find_by_id(user_id)
+        .one(&ctx.conn)
+        .await?
+        .ok_or(ApiError::NotFound)?;
+
+    user_model.delete(&ctx.conn).await?;
+
+    Ok(NoContent)
+}
+
 pub async fn partial_update_user() -> impl IntoResponse {}

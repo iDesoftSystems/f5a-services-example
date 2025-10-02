@@ -26,3 +26,7 @@ Content-Type: {{contentType}}
     "username": "idesoftbot",
     "disabled": true
 }
+
+### delete user
+DELETE {{baseUrl}}/users/1
+Content-Type: {{contentType}}
