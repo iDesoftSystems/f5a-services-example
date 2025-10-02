@@ -35,3 +35,9 @@ pub struct UpdateUserParams {
     pub username: String,
     pub disabled: bool,
 }
+
+#[derive(Deserialize)]
+pub struct PartialUserParams {
+    pub username: Option<String>,
+    pub disabled: Option<bool>,
+}

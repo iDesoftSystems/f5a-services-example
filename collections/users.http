@@ -30,3 +30,11 @@ Content-Type: {{contentType}}
 ### delete user
 DELETE {{baseUrl}}/users/1
 Content-Type: {{contentType}}
+
+### partial update user
+PATCH {{baseUrl}}/users/1
+Content-Type: {{contentType}}
+
+{
+    "disabled": false
+}
