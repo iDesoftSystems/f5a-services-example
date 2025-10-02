@@ -1,12 +1,12 @@
 use crate::context::AppContext;
 use crate::error::ApiError;
-use crate::om::{CreateUserParams, UserCreated};
+use crate::om::{CreateUserParams, UserCreated, UserPage};
 use crate::pagination::Pagination;
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::IntoResponse;
 use sea_orm::sqlx::types::chrono::Utc;
-use sea_orm::{ActiveModelTrait, ActiveValue, TryIntoModel};
+use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait, PaginatorTrait, TryIntoModel};
 
 pub async fn create_user(
     State(ctx): State<AppContext>,
@@ -31,11 +31,26 @@ pub async fn create_user(
     Ok(Json(UserCreated { id: user_model.id }))
 }
 
-pub async fn read_users(Query(pagination): Query<Pagination>) -> impl IntoResponse {
-    format!(
-        "fetching users on page: {} with page size: {}",
-        pagination.page, pagination.page_size
-    )
+pub async fn read_users(
+    State(ctx): State<AppContext>,
+    Query(pagination): Query<Pagination>,
+) -> Result<Json<Vec<UserPage>>, ApiError> {
+    let users = schemas::user::Entity::find()
+        .paginate(&ctx.conn, pagination.page_size)
+        .fetch_page(pagination.page)
+        .await?;
+
+    let users_page = users
+        .into_iter()
+        .map(|model| UserPage {
+            id: model.id,
+            username: model.username,
+            disabled: model.disabled.is_positive(),
+            created_at: model.created_at.and_utc(),
+        })
+        .collect();
+
+    Ok(Json(users_page))
 }
 
 pub async fn read_user(Path(user_id): Path<u32>) -> impl IntoResponse {

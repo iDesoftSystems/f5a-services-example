@@ -9,3 +9,7 @@ Content-Type: {{contentType}}
     "name": "iDesoft Systems",
     "username": "idesoftd"
 }
+
+### read all users with limits
+GET {{baseUrl}}/users?page=0&page_size=3
+Content-Type: {{contentType}}
