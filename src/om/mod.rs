@@ -29,3 +29,9 @@ pub struct UserDetail {
     pub disabled: bool,
     pub created_at: DateTime<Utc>,
 }
+
+#[derive(Deserialize)]
+pub struct UpdateUserParams {
+    pub username: String,
+    pub disabled: bool,
+}

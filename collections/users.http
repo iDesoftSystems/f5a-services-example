@@ -17,3 +17,12 @@ Content-Type: {{contentType}}
 ### read one user
 GET {{baseUrl}}/users/1
 Content-Type: {{contentType}}
+
+### update user
+PUT {{baseUrl}}/users/1
+Content-Type: {{contentType}}
+
+{
+    "username": "idesoftbot",
+    "disabled": true
+}

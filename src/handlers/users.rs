@@ -1,12 +1,14 @@
 use crate::context::AppContext;
 use crate::error::ApiError;
-use crate::om::{CreateUserParams, UserCreated, UserDetail, UserPage};
+use crate::om::{CreateUserParams, UpdateUserParams, UserCreated, UserDetail, UserPage};
 use crate::pagination::Pagination;
 use axum::Json;
 use axum::extract::{Path, Query, State};
-use axum::response::IntoResponse;
+use axum::response::{IntoResponse, NoContent};
 use sea_orm::sqlx::types::chrono::Utc;
-use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait, PaginatorTrait, TryIntoModel};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue, EntityTrait, IntoActiveModel, PaginatorTrait, TryIntoModel,
+};
 
 pub async fn create_user(
     State(ctx): State<AppContext>,
@@ -70,6 +72,24 @@ pub async fn read_user(
     }))
 }
 
-pub async fn update_user() -> impl IntoResponse {}
+pub async fn update_user(
+    State(ctx): State<AppContext>,
+    Path(user_id): Path<i32>,
+    Json(payload): Json<UpdateUserParams>,
+) -> Result<NoContent, ApiError> {
+    let user_model = schemas::user::Entity::find_by_id(user_id)
+        .one(&ctx.conn)
+        .await?
+        .ok_or(ApiError::NotFound)?;
+
+    let mut user_am = user_model.into_active_model();
+    user_am.username = ActiveValue::Set(payload.username);
+    user_am.disabled = ActiveValue::Set(payload.disabled.into());
+
+    user_am.update(&ctx.conn).await?;
+
+    Ok(NoContent)
+}
+
 pub async fn delete_user() -> impl IntoResponse {}
 pub async fn partial_update_user() -> impl IntoResponse {}
