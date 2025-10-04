@@ -5,10 +5,11 @@ use crate::om::{
     CreateUserParams, PartialUserParams, UpdateUserParams, UserCreated, UserDetail, UserPage,
 };
 use crate::pagination::Pagination;
+use crate::queries;
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::NoContent;
-use sea_orm::{EntityTrait, PaginatorTrait};
+use sea_orm::EntityTrait;
 
 pub async fn create_user(
     State(ctx): State<AppContext>,
@@ -30,10 +31,7 @@ pub async fn read_users(
     State(ctx): State<AppContext>,
     Query(pagination): Query<Pagination>,
 ) -> Result<Json<Vec<UserPage>>, ApiError> {
-    let users = schemas::user::Entity::find()
-        .paginate(&ctx.conn, pagination.page_size)
-        .fetch_page(pagination.page)
-        .await?;
+    let users = queries::find_all_users_paginated(&ctx.conn, &pagination).await?;
 
     let users_page = users
         .into_iter()
