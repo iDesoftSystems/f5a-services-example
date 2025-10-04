@@ -1,4 +1,4 @@
-use crate::commands;
+use crate::commands::{self, PartialUpdateUserCommand};
 use crate::context::AppContext;
 use crate::error::ApiError;
 use crate::om::{
@@ -8,7 +8,7 @@ use crate::pagination::Pagination;
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::NoContent;
-use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait, IntoActiveModel, PaginatorTrait};
+use sea_orm::{EntityTrait, PaginatorTrait};
 
 pub async fn create_user(
     State(ctx): State<AppContext>,
@@ -97,21 +97,13 @@ pub async fn partial_update_user(
     Path(user_id): Path<i32>,
     Json(payload): Json<PartialUserParams>,
 ) -> Result<NoContent, ApiError> {
-    let user_model = schemas::user::Entity::find_by_id(user_id)
-        .one(&ctx.conn)
-        .await?
-        .ok_or(ApiError::NotFound)?;
-
-    let mut user_am = user_model.into_active_model();
-    if let Some(username) = payload.username {
-        user_am.username = ActiveValue::Set(username);
+    PartialUpdateUserCommand {
+        user_id,
+        username: payload.username,
+        disabled: payload.disabled,
     }
-
-    if let Some(disabled) = payload.disabled {
-        user_am.disabled = ActiveValue::Set(disabled.into());
-    }
-
-    user_am.update(&ctx.conn).await?;
+    .execute(&ctx.conn)
+    .await?;
 
     Ok(NoContent)
 }
