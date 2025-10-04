@@ -1,21 +1,9 @@
 use sea_orm::sqlx::types::chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate)]
+#[derive(Deserialize, Debug)]
 pub struct CreateUserParams {
-    #[validate(length(
-        min = 1,
-        max = 100,
-        message = "The name must be between 1 and 100 characters"
-    ))]
     pub name: String,
-
-    #[validate(length(
-        min = 3,
-        max = 100,
-        message = "The username must be between 3 and 100 characters"
-    ))]
     pub username: String,
 }
 

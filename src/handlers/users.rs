@@ -1,3 +1,4 @@
+use crate::commands;
 use crate::context::AppContext;
 use crate::error::ApiError;
 use crate::om::{
@@ -7,12 +8,9 @@ use crate::pagination::Pagination;
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::NoContent;
-use sea_orm::sqlx::types::chrono::Utc;
 use sea_orm::{
     ActiveModelTrait, ActiveValue, EntityTrait, IntoActiveModel, ModelTrait, PaginatorTrait,
-    TryIntoModel,
 };
-use validator::Validate;
 
 pub async fn create_user(
     State(ctx): State<AppContext>,
@@ -20,23 +18,14 @@ pub async fn create_user(
 ) -> Result<Json<UserCreated>, ApiError> {
     println!("received payload: {:?}", payload);
 
-    payload.validate()?;
-
-    let current_user_id = 1;
-    let user_model = schemas::user::ActiveModel {
-        id: ActiveValue::NotSet,
-        username: ActiveValue::Set(payload.username),
-        password: ActiveValue::Set("password".into()),
-        disabled: ActiveValue::Set(true.into()),
-        created_at: ActiveValue::Set(Utc::now().naive_utc()),
-        creator_id: ActiveValue::Set(current_user_id),
+    let saved_id = commands::CreateUserCommand {
+        name: payload.name,
+        username: payload.username,
     }
-    .save(&ctx.conn)
-    .await?
-    .try_into_model()?;
+    .execute(&ctx.conn)
+    .await?;
 
-    println!("created user with id: {:?}", user_model.id);
-    Ok(Json(UserCreated { id: user_model.id }))
+    Ok(Json(UserCreated { id: saved_id }))
 }
 
 pub async fn read_users(
