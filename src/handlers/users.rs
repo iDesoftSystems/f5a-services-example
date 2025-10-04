@@ -12,12 +12,15 @@ use sea_orm::{
     ActiveModelTrait, ActiveValue, EntityTrait, IntoActiveModel, ModelTrait, PaginatorTrait,
     TryIntoModel,
 };
+use validator::Validate;
 
 pub async fn create_user(
     State(ctx): State<AppContext>,
     Json(payload): Json<CreateUserParams>,
 ) -> Result<Json<UserCreated>, ApiError> {
     println!("received payload: {:?}", payload);
+
+    payload.validate()?;
 
     let current_user_id = 1;
     let user_model = schemas::user::ActiveModel {
