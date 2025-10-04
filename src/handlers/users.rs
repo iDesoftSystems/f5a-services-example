@@ -72,16 +72,13 @@ pub async fn update_user(
     Path(user_id): Path<i32>,
     Json(payload): Json<UpdateUserParams>,
 ) -> Result<NoContent, ApiError> {
-    let user_model = schemas::user::Entity::find_by_id(user_id)
-        .one(&ctx.conn)
-        .await?
-        .ok_or(ApiError::NotFound)?;
-
-    let mut user_am = user_model.into_active_model();
-    user_am.username = ActiveValue::Set(payload.username);
-    user_am.disabled = ActiveValue::Set(payload.disabled.into());
-
-    user_am.update(&ctx.conn).await?;
+    commands::UpdateUserCommand {
+        user_id,
+        username: payload.username,
+        disabled: payload.disabled,
+    }
+    .execute(&ctx.conn)
+    .await?;
 
     Ok(NoContent)
 }
