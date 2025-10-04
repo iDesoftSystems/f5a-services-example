@@ -8,9 +8,7 @@ use crate::pagination::Pagination;
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::NoContent;
-use sea_orm::{
-    ActiveModelTrait, ActiveValue, EntityTrait, IntoActiveModel, ModelTrait, PaginatorTrait,
-};
+use sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait, IntoActiveModel, PaginatorTrait};
 
 pub async fn create_user(
     State(ctx): State<AppContext>,
@@ -87,12 +85,9 @@ pub async fn delete_user(
     State(ctx): State<AppContext>,
     Path(user_id): Path<i32>,
 ) -> Result<NoContent, ApiError> {
-    let user_model = schemas::user::Entity::find_by_id(user_id)
-        .one(&ctx.conn)
-        .await?
-        .ok_or(ApiError::NotFound)?;
-
-    user_model.delete(&ctx.conn).await?;
+    commands::DeleteUserCommand { user_id }
+        .execute(&ctx.conn)
+        .await?;
 
     Ok(NoContent)
 }
