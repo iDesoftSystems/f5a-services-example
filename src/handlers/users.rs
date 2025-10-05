@@ -9,7 +9,6 @@ use crate::queries;
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::NoContent;
-use sea_orm::EntityTrait;
 
 pub async fn create_user(
     State(ctx): State<AppContext>,
@@ -50,8 +49,7 @@ pub async fn read_user(
     State(ctx): State<AppContext>,
     Path(user_id): Path<i32>,
 ) -> Result<Json<UserDetail>, ApiError> {
-    let user_model = schemas::user::Entity::find_by_id(user_id)
-        .one(&ctx.conn)
+    let user_model = queries::find_user_by_id(&ctx.conn, user_id)
         .await?
         .ok_or(ApiError::NotFound)?;
 

@@ -13,3 +13,10 @@ pub async fn find_all_users_paginated(
 
     Ok(users)
 }
+
+pub async fn find_user_by_id(
+    client: &impl ConnectionTrait,
+    user_id: i32,
+) -> Result<Option<schemas::user::Model>, DbErr> {
+    schemas::user::Entity::find_by_id(user_id).one(client).await
+}
