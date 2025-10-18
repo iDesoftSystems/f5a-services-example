@@ -15,6 +15,8 @@ impl DeleteUserCommand {
 
         user_model.delete(client).await?;
 
+        tracing::info!(user_id = self.user_id, "deleted user");
+
         Ok(())
     }
 }

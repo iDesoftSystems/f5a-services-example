@@ -20,6 +20,8 @@ impl UpdateUserCommand {
 
         user_am.update(client).await?;
 
+        tracing::info!(user_id = self.user_id, "updated user");
+
         Ok(())
     }
 }

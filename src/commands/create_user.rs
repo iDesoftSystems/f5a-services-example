@@ -24,8 +24,6 @@ pub struct CreateUserCommand {
 
 impl CreateUserCommand {
     pub async fn execute(self, client: &impl ConnectionTrait) -> Result<i32, ApiError> {
-        println!("received payload: {:?}", self);
-
         self.validate()?;
 
         let current_user_id = 1;
@@ -41,7 +39,7 @@ impl CreateUserCommand {
         .await?
         .try_into_model()?;
 
-        println!("created user with id: {:?}", user_model.id);
+        tracing::info!(user_id = user_model.id, "created user");
 
         Ok(user_model.id)
     }

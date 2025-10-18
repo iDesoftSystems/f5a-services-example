@@ -10,12 +10,11 @@ use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::NoContent;
 
+#[tracing::instrument(skip(ctx))]
 pub async fn create_user(
     State(ctx): State<AppContext>,
     Json(payload): Json<CreateUserParams>,
 ) -> Result<Json<UserCreated>, ApiError> {
-    println!("received payload: {:?}", payload);
-
     let saved_id = commands::CreateUserCommand {
         name: payload.name,
         username: payload.username,
@@ -61,6 +60,7 @@ pub async fn read_user(
     }))
 }
 
+#[tracing::instrument(skip(ctx))]
 pub async fn update_user(
     State(ctx): State<AppContext>,
     Path(user_id): Path<i32>,
@@ -77,6 +77,7 @@ pub async fn update_user(
     Ok(NoContent)
 }
 
+#[tracing::instrument(skip(ctx))]
 pub async fn delete_user(
     State(ctx): State<AppContext>,
     Path(user_id): Path<i32>,
@@ -88,6 +89,7 @@ pub async fn delete_user(
     Ok(NoContent)
 }
 
+#[tracing::instrument(skip(ctx))]
 pub async fn partial_update_user(
     State(ctx): State<AppContext>,
     Path(user_id): Path<i32>,

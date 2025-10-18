@@ -14,6 +14,10 @@ sea-orm = { version = "1.1", features = ["sqlx-mysql", "runtime-tokio-rustls"] }
 schemas = { path = "./schemas" }
 dotenvy = "0.15.7"
 validator = { version = "0.20.0", features = ["derive"] }
+tracing = { version = "0.1.41" }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
+tower-http = { version = "0.6.6", features = ["trace", "propagate-header", "request-id"] }
+tower = { version = "0.5.2" }
 
 [dependencies]
 tokio = { workspace = true }
@@ -23,3 +27,7 @@ sea-orm = { workspace = true }
 schemas = { workspace = true }
 dotenvy = { workspace = true }
 validator = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }

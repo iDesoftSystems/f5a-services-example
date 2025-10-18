@@ -30,13 +30,13 @@ pub struct UserDetail {
     pub created_at: DateTime<Utc>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct UpdateUserParams {
     pub username: String,
     pub disabled: bool,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct PartialUserParams {
     pub username: Option<String>,
     pub disabled: Option<bool>,
