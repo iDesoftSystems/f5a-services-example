@@ -832,10 +832,12 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "dotenvy",
+ "http-body-util",
  "mime",
  "schemas",
  "sea-orm",
  "serde",
+ "serde_json",
  "tokio",
  "tower",
  "tower-http",
