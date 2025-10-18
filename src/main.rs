@@ -1,5 +1,6 @@
 use axum::http::HeaderName;
-use f5a_services::{context::AppContext, handlers};
+use f5a_services::context::AppContext;
+use f5a_services::routes;
 use sea_orm::Database;
 use std::{env, net::SocketAddr};
 use tower::ServiceBuilder;
@@ -39,21 +40,7 @@ async fn main() {
         )));
 
     let app_ctx = AppContext { conn };
-    let router = axum::Router::new()
-        .route("/", axum::routing::get(handlers::root_handler))
-        .route(
-            "/users",
-            axum::routing::get(handlers::read_users).post(handlers::create_user),
-        )
-        .route(
-            "/users/{user_id}",
-            axum::routing::get(handlers::read_user)
-                .put(handlers::update_user)
-                .patch(handlers::partial_update_user)
-                .delete(handlers::delete_user),
-        )
-        .with_state(app_ctx)
-        .layer(service_layers);
+    let router = routes::router().with_state(app_ctx).layer(service_layers);
 
     println!("Listening on {}", listener.local_addr().unwrap());
 
