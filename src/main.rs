@@ -2,6 +2,7 @@ use axum::http::HeaderName;
 use f5a_services::context::AppContext;
 use f5a_services::routes;
 use sea_orm::Database;
+use std::sync::Arc;
 use std::{env, net::SocketAddr};
 use tower::ServiceBuilder;
 use tower_http::propagate_header::PropagateHeaderLayer;
@@ -39,7 +40,9 @@ async fn main() {
             "x-request-id",
         )));
 
-    let app_ctx = AppContext { conn };
+    let app_ctx = AppContext {
+        conn: Arc::new(conn),
+    };
     let router = routes::router().with_state(app_ctx).layer(service_layers);
 
     println!("Listening on {}", listener.local_addr().unwrap());

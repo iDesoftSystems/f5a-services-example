@@ -1,15 +1,17 @@
-use crate::setup;
+use crate::setup::TestContext;
 use axum::{
     body::Body,
     http::{self, Request, StatusCode},
 };
 use http_body_util::BodyExt;
+use sea_orm::EntityTrait;
 use serde_json::json;
 use tower::ServiceExt;
 
 #[tokio::test]
 async fn it_not_accept_empty_user_request() {
-    let app = setup::configure().await;
+    let ctx = TestContext::new().await;
+    let app = ctx.configure();
 
     let req = Request::post("/users")
         .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
@@ -22,7 +24,8 @@ async fn it_not_accept_empty_user_request() {
 
 #[tokio::test]
 async fn it_validate_required_user_params() {
-    let app = setup::configure().await;
+    let ctx = TestContext::new().await;
+    let app = ctx.configure();
 
     let user_params = json!({
         "name": "",
@@ -56,4 +59,37 @@ async fn it_validate_required_user_params() {
     let body_content: serde_json::Value = serde_json::from_slice(&body_bytes).unwrap();
 
     assert_eq!(body_content, expected_body);
+}
+
+#[tokio::test]
+async fn it_accepts_and_save_valid_user() {
+    let ctx = TestContext::new().await;
+    ctx.setup_schema().await;
+
+    let app = ctx.configure();
+
+    let user_params = json!({
+        "name": "iDesoft Systems",
+        "username": "idesoft"
+    })
+    .to_string();
+    let req = Request::post("/users")
+        .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+        .body(Body::from(user_params))
+        .unwrap();
+
+    let res = app.oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+
+    let user_saved = schemas::user::Entity::find_by_id(1)
+        .one(ctx.db.as_ref())
+        .await
+        .unwrap();
+    assert!(user_saved.is_some());
+
+    let user_model = user_saved.unwrap();
+    assert_eq!(user_model.id, 1);
+    assert_eq!(user_model.username, "idesoft");
+    assert_eq!(user_model.creator_id, 1);
+    assert!(user_model.disabled.is_positive());
 }

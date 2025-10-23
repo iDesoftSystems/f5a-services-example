@@ -1,20 +1,35 @@
+use std::sync::Arc;
+
 use f5a_services::{context::AppContext, routes};
-use sea_orm::{ConnectionTrait, Database, DbConn};
+use sea_orm::{ConnectionTrait, Database, DatabaseConnection};
 
-pub async fn configure() -> axum::Router {
-    let db = Database::connect("sqlite::memory:").await.unwrap();
-
-    setup_db_schema(&db).await;
-
-    routes::router().with_state(AppContext { conn: db })
+pub struct TestContext {
+    pub db: Arc<DatabaseConnection>,
 }
 
-async fn setup_db_schema(db: &DbConn) {
-    let db_schema = sea_orm::Schema::new(db.get_database_backend());
+impl TestContext {
+    pub async fn new() -> Self {
+        let db = Database::connect("sqlite::memory:").await.unwrap();
 
-    let stmt = db_schema.create_table_from_entity(schemas::user::Entity);
+        Self { db: Arc::new(db) }
+    }
 
-    db.execute(db.get_database_backend().build(&stmt))
-        .await
-        .unwrap();
+    pub async fn setup_schema(&self) -> &Self {
+        let db_schema = sea_orm::Schema::new(self.db.get_database_backend());
+
+        let stmt = db_schema.create_table_from_entity(schemas::user::Entity);
+
+        self.db
+            .execute(self.db.get_database_backend().build(&stmt))
+            .await
+            .unwrap();
+
+        self
+    }
+
+    pub fn configure(&self) -> axum::Router {
+        routes::router().with_state(AppContext {
+            conn: Arc::clone(&self.db),
+        })
+    }
 }

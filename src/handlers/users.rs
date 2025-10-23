@@ -19,7 +19,7 @@ pub async fn create_user(
         name: payload.name,
         username: payload.username,
     }
-    .execute(&ctx.conn)
+    .execute(ctx.conn.as_ref())
     .await?;
 
     Ok(Json(UserCreated { id: saved_id }))
@@ -29,7 +29,7 @@ pub async fn read_users(
     State(ctx): State<AppContext>,
     Query(pagination): Query<Pagination>,
 ) -> Result<Json<Vec<UserPage>>, ApiError> {
-    let users = queries::find_all_users_paginated(&ctx.conn, &pagination).await?;
+    let users = queries::find_all_users_paginated(ctx.conn.as_ref(), &pagination).await?;
 
     let users_page = users
         .into_iter()
@@ -48,7 +48,7 @@ pub async fn read_user(
     State(ctx): State<AppContext>,
     Path(user_id): Path<i32>,
 ) -> Result<Json<UserDetail>, ApiError> {
-    let user_model = queries::find_user_by_id(&ctx.conn, user_id)
+    let user_model = queries::find_user_by_id(ctx.conn.as_ref(), user_id)
         .await?
         .ok_or(ApiError::NotFound)?;
 
@@ -71,7 +71,7 @@ pub async fn update_user(
         username: payload.username,
         disabled: payload.disabled,
     }
-    .execute(&ctx.conn)
+    .execute(ctx.conn.as_ref())
     .await?;
 
     Ok(NoContent)
@@ -83,7 +83,7 @@ pub async fn delete_user(
     Path(user_id): Path<i32>,
 ) -> Result<NoContent, ApiError> {
     commands::DeleteUserCommand { user_id }
-        .execute(&ctx.conn)
+        .execute(ctx.conn.as_ref())
         .await?;
 
     Ok(NoContent)
@@ -100,7 +100,7 @@ pub async fn partial_update_user(
         username: payload.username,
         disabled: payload.disabled,
     }
-    .execute(&ctx.conn)
+    .execute(ctx.conn.as_ref())
     .await?;
 
     Ok(NoContent)
