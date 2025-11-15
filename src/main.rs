@@ -1,10 +1,12 @@
-use axum::http::HeaderName;
+use axum::http::header::{AUTHORIZATION, CONTENT_TYPE};
+use axum::http::{HeaderName, HeaderValue};
 use f5a_services::context::AppContext;
 use f5a_services::routes;
 use sea_orm::Database;
 use std::sync::Arc;
 use std::{env, net::SocketAddr};
 use tower::ServiceBuilder;
+use tower_http::cors::{self, CorsLayer};
 use tower_http::propagate_header::PropagateHeaderLayer;
 use tower_http::request_id::{MakeRequestUuid, SetRequestIdLayer};
 use tower_http::trace::{DefaultMakeSpan, TraceLayer};
@@ -43,7 +45,16 @@ async fn main() {
     let app_ctx = AppContext {
         conn: Arc::new(conn),
     };
-    let router = routes::router().with_state(app_ctx).layer(service_layers);
+
+    let router = routes::router()
+        .with_state(app_ctx)
+        .layer(service_layers)
+        .layer(
+            CorsLayer::new()
+                .allow_methods(cors::Any)
+                .allow_origin("http://localhost:8081".parse::<HeaderValue>().unwrap())
+                .allow_headers([AUTHORIZATION, CONTENT_TYPE]),
+        );
 
     println!("Listening on {}", listener.local_addr().unwrap());
 
