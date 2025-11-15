@@ -6,10 +6,21 @@ use crate::om::{
 };
 use crate::pagination::Pagination;
 use crate::queries;
+use crate::response::ProblemDetails;
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::NoContent;
 
+#[utoipa::path(
+    post,
+    path = "/api/users", 
+    tag = "user", 
+    responses(
+        (status = CREATED, body=UserCreated, description = "User item created successfully"),
+        (status = INTERNAL_SERVER_ERROR),
+        (status = BAD_REQUEST, body = ProblemDetails),
+    )
+)]
 #[tracing::instrument(skip(ctx))]
 pub async fn create_user(
     State(ctx): State<AppContext>,
@@ -25,6 +36,18 @@ pub async fn create_user(
     Ok(Json(UserCreated { id: saved_id }))
 }
 
+#[utoipa::path(
+    get, 
+    path = "/api/users", 
+    tag = "user",
+    params(
+        Pagination
+    ),
+    responses(
+        (status=OK, body = [UserPage], description = "Get all users paginated"),
+        (status = INTERNAL_SERVER_ERROR),
+    )
+)]
 pub async fn read_users(
     State(ctx): State<AppContext>,
     Query(pagination): Query<Pagination>,
@@ -44,6 +67,19 @@ pub async fn read_users(
     Ok(Json(users_page))
 }
 
+#[utoipa::path(
+    get, 
+    path = "/api/users/{user_id}", 
+    tag = "user", 
+    params(
+        ("user_id"=i32, Path, description = "User item unique id")
+    ),
+    responses(
+        (status = OK, body = UserDetail),
+        (status = NOT_FOUND, description = "User was not found"),
+        (status = INTERNAL_SERVER_ERROR),
+    )
+)]
 pub async fn read_user(
     State(ctx): State<AppContext>,
     Path(user_id): Path<i32>,
@@ -60,6 +96,19 @@ pub async fn read_user(
     }))
 }
 
+#[utoipa::path(
+    put,
+    path = "/api/users/{user_id}",
+    tag = "user",
+    params(
+        ("user_id"=i32, Path, description = "User item unique id")
+    ),
+    responses(
+        (status = NO_CONTENT),
+        (status = INTERNAL_SERVER_ERROR),
+        (status = BAD_REQUEST, body = ProblemDetails),
+    )
+)]
 #[tracing::instrument(skip(ctx))]
 pub async fn update_user(
     State(ctx): State<AppContext>,
@@ -77,6 +126,18 @@ pub async fn update_user(
     Ok(NoContent)
 }
 
+#[utoipa::path(
+    delete,
+    path = "/api/users/{user_id}",
+    tag = "user",
+    params(
+        ("user_id"=i32, Path, description = "User item unique id")
+    ),
+    responses(
+        (status = NO_CONTENT),
+        (status = INTERNAL_SERVER_ERROR),
+    )
+)]
 #[tracing::instrument(skip(ctx))]
 pub async fn delete_user(
     State(ctx): State<AppContext>,
@@ -89,6 +150,19 @@ pub async fn delete_user(
     Ok(NoContent)
 }
 
+#[utoipa::path(
+    patch,
+    path = "/api/users/{user_id}",
+    tag = "user",
+    params(
+        ("user_id"=i32, Path, description = "User item unique id")
+    ),
+    responses(
+        (status = NO_CONTENT),
+        (status = INTERNAL_SERVER_ERROR),
+        (status = BAD_REQUEST, body = ProblemDetails),
+    )
+)]
 #[tracing::instrument(skip(ctx))]
 pub async fn partial_update_user(
     State(ctx): State<AppContext>,

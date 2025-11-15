@@ -13,7 +13,7 @@ async fn it_not_accept_empty_user_request() {
     let ctx = TestContext::new().await;
     let app = ctx.configure();
 
-    let req = Request::post("/users")
+    let req = Request::post("/api/users")
         .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
         .body(Body::empty())
         .unwrap();
@@ -32,7 +32,7 @@ async fn it_validate_required_user_params() {
         "username": ""
     })
     .to_string();
-    let req = Request::post("/users")
+    let req = Request::post("/api/users")
         .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
         .body(Body::from(user_params))
         .unwrap();
@@ -73,7 +73,7 @@ async fn it_accepts_and_save_valid_user() {
         "username": "idesoft"
     })
     .to_string();
-    let req = Request::post("/users")
+    let req = Request::post("/api/users")
         .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
         .body(Body::from(user_params))
         .unwrap();
