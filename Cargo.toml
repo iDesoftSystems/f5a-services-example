@@ -24,6 +24,7 @@ tower-http = { version = "0.6.6", features = [
     "trace",
     "propagate-header",
     "request-id",
+    "cors",
 ] }
 tower = { version = "0.5.2", features = ["util"] }
 
