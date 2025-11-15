@@ -10,6 +10,7 @@ This repository includes the sample code developed during the [Web Service Devel
 - Module 6: Enforcing Architecture
 - Module 7: Observability
 - Module 8: API Integration Testing
+- Module 9: API Documentation with OpenAPI (Swagger)
 
 ## Getting started from scratch
 
