@@ -1,4 +1,4 @@
-use sea_orm::{ConnectionTrait, DbErr, EntityTrait, PaginatorTrait};
+use sea_orm::{ConnectionTrait, DbErr, EntityTrait, PaginatorTrait, QueryOrder};
 
 use crate::pagination::Pagination;
 
@@ -7,6 +7,7 @@ pub async fn find_all_users_paginated(
     pagination: &Pagination,
 ) -> Result<Vec<schemas::user::Model>, DbErr> {
     let users = schemas::user::Entity::find()
+        .order_by_desc(schemas::user::Column::Id)
         .paginate(client, pagination.page_size)
         .fetch_page(pagination.page)
         .await?;
