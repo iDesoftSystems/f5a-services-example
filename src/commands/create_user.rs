@@ -8,13 +8,6 @@ use crate::error::ApiError;
 #[derive(Validate, Debug)]
 pub struct CreateUserCommand {
     #[validate(length(
-        min = 1,
-        max = 100,
-        message = "The name must be between 1 and 100 characters"
-    ))]
-    pub name: String,
-
-    #[validate(length(
         min = 3,
         max = 100,
         message = "The username must be between 3 and 100 characters"

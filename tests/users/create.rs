@@ -28,7 +28,6 @@ async fn it_validate_required_user_params() {
     let app = ctx.configure();
 
     let user_params = json!({
-        "name": "",
         "username": ""
     })
     .to_string();
@@ -43,11 +42,6 @@ async fn it_validate_required_user_params() {
     let expected_body = json!({
         "detail": "Validation failed",
         "errors": [
-            {
-                "code": "length",
-                "field": "name",
-                "reason": "The name must be between 1 and 100 characters"
-            },
             {
                 "code": "length",
                 "field": "username",
@@ -69,7 +63,6 @@ async fn it_accepts_and_save_valid_user() {
     let app = ctx.configure();
 
     let user_params = json!({
-        "name": "iDesoft Systems",
         "username": "idesoft"
     })
     .to_string();
