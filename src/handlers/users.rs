@@ -27,7 +27,6 @@ pub async fn create_user(
     Json(payload): Json<CreateUserParams>,
 ) -> Result<Json<UserCreated>, ApiError> {
     let saved_id = commands::CreateUserCommand {
-        name: payload.name,
         username: payload.username,
     }
     .execute(ctx.conn.as_ref())
