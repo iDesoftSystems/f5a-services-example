@@ -7,3 +7,4 @@ pub mod pagination;
 pub mod queries;
 pub mod response;
 pub mod routes;
+pub mod validators;

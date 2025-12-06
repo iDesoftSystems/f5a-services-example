@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:8080
+@baseUrl = http://localhost:8080/api
 @contentType = application/json
 
 ### create a new user
@@ -6,8 +6,13 @@ POST {{baseUrl}}/users
 Content-Type: {{contentType}}
 
 {
-    "name": "iDesoft Systems",
-    "username": "idesoftd"
+    "name": "iDesoft Systemts",
+    "username": "idesoftd",
+    "password": "iD3softSystems!",
+    "confirm_password": "iD3softSystems!",
+    "email": "hi@idesoft.co",
+    "website": "https://idesoft.co",
+    "age": 18
 }
 
 ### read all users with limits

@@ -1,4 +1,6 @@
-use sea_orm::{ConnectionTrait, DbErr, EntityTrait, PaginatorTrait, QueryOrder};
+use sea_orm::{
+    ColumnTrait, ConnectionTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
+};
 
 use crate::pagination::Pagination;
 
@@ -20,4 +22,14 @@ pub async fn find_user_by_id(
     user_id: i32,
 ) -> Result<Option<schemas::user::Model>, DbErr> {
     schemas::user::Entity::find_by_id(user_id).one(client).await
+}
+
+pub async fn find_user_by_username(
+    client: &impl ConnectionTrait,
+    username: &str,
+) -> Result<Option<schemas::user::Model>, DbErr> {
+    schemas::user::Entity::find()
+        .filter(schemas::user::Column::Username.eq(username))
+        .one(client)
+        .await
 }

@@ -1,7 +1,7 @@
 use axum::response::IntoResponse;
 
 #[utoipa::path(
-    get, 
+    get,
     path = "/", 
     responses(
         (status = 200, body=String),
