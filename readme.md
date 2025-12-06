@@ -11,6 +11,7 @@ This repository includes the sample code developed during the [Web Service Devel
 - Module 7: Observability
 - Module 8: API Integration Testing
 - Module 9: API Documentation with OpenAPI (Swagger)
+- Module 10: CI Pipeline with GitHub Actions
 
 ## Getting started from scratch
 
