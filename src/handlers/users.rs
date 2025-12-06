@@ -27,7 +27,13 @@ pub async fn create_user(
     Json(payload): Json<CreateUserParams>,
 ) -> Result<Json<UserCreated>, ApiError> {
     let saved_id = commands::CreateUserCommand {
+        name: payload.name,
         username: payload.username,
+        email: payload.email,
+        website: payload.website,
+        age: payload.age,
+        password: payload.password,
+        confirm_password: payload.confirm_password,
     }
     .execute(ctx.conn.as_ref())
     .await?;
@@ -36,7 +42,7 @@ pub async fn create_user(
 }
 
 #[utoipa::path(
-    get, 
+    get,
     path = "/api/users", 
     tag = "user",
     params(
@@ -67,7 +73,7 @@ pub async fn read_users(
 }
 
 #[utoipa::path(
-    get, 
+    get,
     path = "/api/users/{user_id}", 
     tag = "user", 
     params(

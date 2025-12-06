@@ -3,21 +3,54 @@ use sea_orm::{
 };
 use validator::Validate;
 
-use crate::error::ApiError;
+use crate::{error::ApiError, queries};
 
 #[derive(Validate, Debug)]
 pub struct CreateUserCommand {
     #[validate(length(
         min = 3,
         max = 100,
-        message = "The username must be between 3 and 100 characters"
+        message = "name must be between 3 and 100 characters long"
+    ))]
+    pub name: String,
+
+    #[validate(email(message = "Email address is not valid"))]
+    pub email: String,
+
+    #[validate(length(
+        min = 3,
+        max = 100,
+        message = "Username must be between 3 and 100 characters long"
     ))]
     pub username: String,
+
+    #[validate(url(message = "Website URL is not valid"))]
+    pub website: String,
+
+    #[validate(range(min = 18, max = 100, message = "Age must be between 18 and 100"))]
+    pub age: u8,
+
+    #[validate(custom(function = "crate::validators::password_strength"))]
+    pub password: String,
+
+    #[validate(must_match(other = "password", message = "Passwords do not match"))]
+    pub confirm_password: String,
 }
 
 impl CreateUserCommand {
     pub async fn execute(self, client: &impl ConnectionTrait) -> Result<i32, ApiError> {
+        tracing::info!("creating a new user");
+
         self.validate()?;
+
+        if queries::find_user_by_username(client, &self.username)
+            .await?
+            .is_some()
+        {
+            return Err(ApiError::UnprocessableEntity(
+                "Username already exists".into(),
+            ));
+        }
 
         let current_user_id = 1;
         let user_model = schemas::user::ActiveModel {

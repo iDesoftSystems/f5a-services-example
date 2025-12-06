@@ -4,7 +4,13 @@ use utoipa::ToSchema;
 
 #[derive(Deserialize, Debug, ToSchema)]
 pub struct CreateUserParams {
+    pub name: String,
     pub username: String,
+    pub email: String,
+    pub website: String,
+    pub age: u8,
+    pub password: String,
+    pub confirm_password: String,
 }
 
 #[derive(Serialize, ToSchema)]

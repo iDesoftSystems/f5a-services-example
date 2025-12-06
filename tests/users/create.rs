@@ -28,7 +28,13 @@ async fn it_validate_required_user_params() {
     let app = ctx.configure();
 
     let user_params = json!({
-        "username": ""
+        "name": "",
+        "email": "",
+        "username": "",
+        "website": "",
+        "age": 0,
+        "password": "",
+        "confirm_password": ""
     })
     .to_string();
     let req = Request::post("/api/users")
@@ -42,10 +48,35 @@ async fn it_validate_required_user_params() {
     let expected_body = json!({
         "detail": "Validation failed",
         "errors": [
+             {
+                "code": "range",
+                "field": "age",
+                "reason": "Age must be between 18 and 100"
+            },
+             {
+                "code": "email",
+                "field": "email",
+                "reason": "Email address is not valid"
+            },
+            {
+                "code": "length",
+                "field": "name",
+                "reason": "name must be between 3 and 100 characters long"
+            },
+            {
+                "code": "password_too_short",
+                "field": "password",
+                "reason": "Password must be at least 12 characters long"
+            },
             {
                 "code": "length",
                 "field": "username",
-                "reason": "The username must be between 3 and 100 characters"
+                "reason": "Username must be between 3 and 100 characters long"
+            },
+            {
+                "code": "url",
+                "field": "website",
+                "reason": "Website URL is not valid"
             }
         ],
     });
@@ -63,7 +94,13 @@ async fn it_accepts_and_save_valid_user() {
     let app = ctx.configure();
 
     let user_params = json!({
-        "username": "idesoft"
+        "name": "iDesoft Systems",
+        "email": "idesoft@idesoft.co",
+        "username": "idesoft",
+        "website": "https://idesoft.co",
+        "age": 18,
+        "password": "iD3softSystems!",
+        "confirm_password": "iD3softSystems!"
     })
     .to_string();
     let req = Request::post("/api/users")
