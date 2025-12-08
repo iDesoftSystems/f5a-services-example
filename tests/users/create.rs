@@ -1,9 +1,9 @@
-use crate::setup::TestContext;
+use crate::{setup::TestContext, test_ext::IntoValue};
 use axum::{
     body::Body,
     http::{self, Request, StatusCode},
 };
-use http_body_util::BodyExt;
+use f5a_services::om::UserCreated;
 use sea_orm::EntityTrait;
 use serde_json::json;
 use tower::ServiceExt;
@@ -80,8 +80,7 @@ async fn it_validate_required_user_params() {
             }
         ],
     });
-    let body_bytes = res.into_body().collect().await.unwrap().to_bytes();
-    let body_content: serde_json::Value = serde_json::from_slice(&body_bytes).unwrap();
+    let body_content = res.into_value::<serde_json::Value>().await;
 
     assert_eq!(body_content, expected_body);
 }
@@ -111,14 +110,16 @@ async fn it_accepts_and_save_valid_user() {
     let res = app.oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::OK);
 
-    let user_saved = schemas::user::Entity::find_by_id(1)
+    let user_created = res.into_value::<UserCreated>().await;
+
+    let user_saved = schemas::user::Entity::find_by_id(user_created.id)
         .one(ctx.db.as_ref())
         .await
         .unwrap();
     assert!(user_saved.is_some());
 
     let user_model = user_saved.unwrap();
-    assert_eq!(user_model.id, 1);
+    assert_eq!(user_model.id, user_created.id);
     assert_eq!(user_model.username, "idesoft");
     assert_eq!(user_model.creator_id, 1);
     assert!(user_model.disabled.is_positive());

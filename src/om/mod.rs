@@ -13,7 +13,7 @@ pub struct CreateUserParams {
     pub confirm_password: String,
 }
 
-#[derive(Serialize, ToSchema)]
+#[derive(Serialize, ToSchema, Deserialize)]
 pub struct UserCreated {
     pub id: i32,
 }
