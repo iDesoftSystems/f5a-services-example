@@ -3,7 +3,7 @@ use axum::{
     http::{self, Request, StatusCode},
 };
 use sea_orm::EntityTrait;
-use serde_json::json;
+use serde_json::{Value, json};
 use tower::ServiceExt;
 
 use crate::{setup::TestContext, test_ext::IntoValue, users::migrations::insert_idesoft_user};
@@ -55,7 +55,7 @@ async fn it_validate_required_user_fields_to_update() {
         ],
         "detail": "Validation failed"
     });
-    assert_eq!(res.into_value().await, expected_body)
+    assert_eq!(res.into_value::<Value>().await, expected_body)
 }
 
 #[tokio::test]
