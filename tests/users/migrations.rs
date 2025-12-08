@@ -16,3 +16,20 @@ pub async fn insert_idesoft_user(
     .save(conn)
     .await
 }
+
+pub async fn insert_blue_bird_user(
+    conn: &impl ConnectionTrait,
+) -> Result<schemas::user::ActiveModel, DbErr> {
+    let created_at = Utc::now();
+
+    schemas::user::ActiveModel {
+        id: ActiveValue::NotSet,
+        username: ActiveValue::Set("bluebird".into()),
+        password: ActiveValue::Set("bluebird".into()),
+        disabled: ActiveValue::Set(false.into()),
+        created_at: ActiveValue::Set(created_at.naive_utc()),
+        creator_id: ActiveValue::Set(1),
+    }
+    .save(conn)
+    .await
+}
