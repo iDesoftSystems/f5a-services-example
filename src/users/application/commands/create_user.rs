@@ -3,7 +3,8 @@ use sea_orm::{
 };
 use validator::Validate;
 
-use crate::{error::ApiError, queries};
+use crate::error::ApiError;
+use crate::users::persistence;
 
 #[derive(Validate, Debug)]
 pub struct CreateUserCommand {
@@ -43,7 +44,7 @@ impl CreateUserCommand {
 
         self.validate()?;
 
-        if queries::find_user_by_username(client, &self.username)
+        if persistence::dao::find_user_by_username(client, &self.username)
             .await?
             .is_some()
         {

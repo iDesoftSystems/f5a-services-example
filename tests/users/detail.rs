@@ -2,7 +2,7 @@ use axum::{
     body::Body,
     http::{self, Request, StatusCode},
 };
-use f5a_services::om::UserDetail;
+use f5a_services::users::http::om::UserDetail;
 use tower::ServiceExt;
 
 use crate::{setup::TestContext, test_ext::IntoValue, users::migrations};

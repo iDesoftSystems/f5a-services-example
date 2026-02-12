@@ -3,7 +3,7 @@ use axum::{
     body::Body,
     http::{self, Request, StatusCode},
 };
-use f5a_services::om::UserCreated;
+use f5a_services::users::http::om::UserCreated;
 use sea_orm::EntityTrait;
 use serde_json::json;
 use tower::ServiceExt;

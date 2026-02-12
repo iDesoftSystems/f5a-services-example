@@ -2,7 +2,7 @@ use utoipa::OpenApi;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use utoipa_swagger_ui::SwaggerUi;
 
-use crate::{context::AppContext, handlers};
+use crate::{context::AppContext, root, users};
 
 #[derive(OpenApi)]
 #[openapi(
@@ -15,16 +15,16 @@ pub struct ApiDoc;
 
 pub fn router() -> axum::Router<AppContext> {
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .routes(routes!(handlers::root::root_handler))
+        .routes(routes!(root::http::handlers::root_handler))
         .routes(routes!(
-            handlers::users::read_users,
-            handlers::users::create_user
+            users::http::handlers::read_users,
+            users::http::handlers::create_user
         ))
         .routes(routes!(
-            handlers::users::read_user,
-            handlers::users::update_user,
-            handlers::users::partial_update_user,
-            handlers::users::delete_user
+            users::http::handlers::read_user,
+            users::http::handlers::update_user,
+            users::http::handlers::partial_update_user,
+            users::http::handlers::delete_user
         ))
         .split_for_parts();
 

@@ -1,15 +1,18 @@
-use crate::commands::{self, PartialUpdateUserCommand};
 use crate::context::AppContext;
 use crate::error::ApiError;
-use crate::om::{
+use crate::pagination::Pagination;
+use crate::response::ProblemDetails;
+use crate::users::application::commands::{self, PartialUpdateUserCommand};
+use crate::users::application::queries;
+use crate::users::application::queries::ReadUsersQuery;
+use crate::users::http::om::{
     CreateUserParams, PartialUserParams, UpdateUserParams, UserCreated, UserDetail, UserPage,
 };
-use crate::pagination::Pagination;
-use crate::queries;
-use crate::response::ProblemDetails;
+use crate::users::persistence;
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::NoContent;
+use std::sync::Arc;
 
 #[utoipa::path(
     post,
@@ -57,17 +60,12 @@ pub async fn read_users(
     State(ctx): State<AppContext>,
     Query(pagination): Query<Pagination>,
 ) -> Result<Json<Vec<UserPage>>, ApiError> {
-    let users = queries::find_all_users_paginated(ctx.conn.as_ref(), &pagination).await?;
-
-    let users_page = users
-        .into_iter()
-        .map(|model| UserPage {
-            id: model.id,
-            username: model.username,
-            disabled: model.disabled.is_positive(),
-            created_at: model.created_at.and_utc(),
-        })
-        .collect();
+    let query = ReadUsersQuery { pagination };
+    let users_page = queries::ReadUsersQueryHandler {
+        conn: Arc::clone(&ctx.conn),
+    }
+    .handle(query)
+    .await?;
 
     Ok(Json(users_page))
 }
@@ -89,7 +87,7 @@ pub async fn read_user(
     State(ctx): State<AppContext>,
     Path(user_id): Path<i32>,
 ) -> Result<Json<UserDetail>, ApiError> {
-    let user_model = queries::find_user_by_id(ctx.conn.as_ref(), user_id)
+    let user_model = persistence::dao::find_user_by_id(ctx.conn.as_ref(), user_id)
         .await?
         .ok_or(ApiError::NotFound)?;
 

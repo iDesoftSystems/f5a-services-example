@@ -1,6 +1,7 @@
 use sea_orm::{ActiveModelTrait, ActiveValue, ConnectionTrait, IntoActiveModel};
 
-use crate::{error::ApiError, queries};
+use crate::error::ApiError;
+use crate::users::persistence;
 
 pub struct PartialUpdateUserCommand {
     pub user_id: i32,
@@ -10,7 +11,7 @@ pub struct PartialUpdateUserCommand {
 
 impl PartialUpdateUserCommand {
     pub async fn execute(self, client: &impl ConnectionTrait) -> Result<(), ApiError> {
-        let user_model = queries::find_user_by_id(client, self.user_id)
+        let user_model = persistence::dao::find_user_by_id(client, self.user_id)
             .await?
             .ok_or(ApiError::NotFound)?;
 
