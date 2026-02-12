@@ -6,6 +6,7 @@ use crate::users::http::om::UpdateUserParams;
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::response::NoContent;
+use std::sync::Arc;
 
 #[utoipa::path(
     put,
@@ -26,12 +27,16 @@ pub async fn update_user(
     Path(user_id): Path<i32>,
     Json(payload): Json<UpdateUserParams>,
 ) -> Result<NoContent, ApiError> {
-    commands::UpdateUserCommand {
+    let command = commands::UpdateUserCommand {
         user_id,
         username: payload.username,
         disabled: payload.disabled,
+    };
+
+    commands::UpdateUserCommandHandler {
+        conn: Arc::clone(&ctx.conn),
     }
-    .execute(ctx.conn.as_ref())
+    .handle(command)
     .await?;
 
     Ok(NoContent)

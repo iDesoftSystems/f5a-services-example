@@ -1,6 +1,7 @@
-use sea_orm::{
-    ActiveModelTrait, ActiveValue, ConnectionTrait, TryIntoModel, sqlx::types::chrono::Utc,
-};
+use std::sync::Arc;
+
+use sea_orm::DatabaseConnection;
+use sea_orm::{ActiveModelTrait, ActiveValue, sqlx::types::chrono::Utc};
 use validator::Validate;
 
 use crate::error::ApiError;
@@ -38,13 +39,17 @@ pub struct CreateUserCommand {
     pub confirm_password: String,
 }
 
-impl CreateUserCommand {
-    pub async fn execute(self, client: &impl ConnectionTrait) -> Result<i32, ApiError> {
+pub struct CreateUserCommandHandler {
+    pub conn: Arc<DatabaseConnection>,
+}
+
+impl CreateUserCommandHandler {
+    pub async fn handle(&self, command: CreateUserCommand) -> Result<i32, ApiError> {
         tracing::info!("creating a new user");
 
-        self.validate()?;
+        command.validate()?;
 
-        if persistence::dao::find_user_by_username(client, &self.username)
+        if persistence::dao::find_user_by_username(self.conn.as_ref(), &command.username)
             .await?
             .is_some()
         {
@@ -56,15 +61,14 @@ impl CreateUserCommand {
         let current_user_id = 1;
         let user_model = schemas::user::ActiveModel {
             id: ActiveValue::NotSet,
-            username: ActiveValue::Set(self.username),
+            username: ActiveValue::Set(command.username),
             password: ActiveValue::Set("password".into()),
             disabled: ActiveValue::Set(true.into()),
             created_at: ActiveValue::Set(Utc::now().naive_utc()),
             creator_id: ActiveValue::Set(current_user_id),
         }
-        .save(client)
-        .await?
-        .try_into_model()?;
+        .insert(self.conn.as_ref())
+        .await?;
 
         tracing::info!(user_id = user_model.id, "created user");
 

@@ -1,10 +1,11 @@
 use crate::context::AppContext;
 use crate::error::ApiError;
 use crate::response::ProblemDetails;
-use crate::users::application::commands;
+use crate::users::application::commands::{self, CreateUserCommandHandler};
 use crate::users::http::om::{CreateUserParams, UserCreated};
 use axum::Json;
 use axum::extract::State;
+use std::sync::Arc;
 
 #[utoipa::path(
     post,
@@ -21,7 +22,7 @@ pub async fn create_user(
     State(ctx): State<AppContext>,
     Json(payload): Json<CreateUserParams>,
 ) -> Result<Json<UserCreated>, ApiError> {
-    let saved_id = commands::CreateUserCommand {
+    let command = commands::CreateUserCommand {
         name: payload.name,
         username: payload.username,
         email: payload.email,
@@ -29,8 +30,12 @@ pub async fn create_user(
         age: payload.age,
         password: payload.password,
         confirm_password: payload.confirm_password,
+    };
+
+    let saved_id = CreateUserCommandHandler {
+        conn: Arc::clone(&ctx.conn),
     }
-    .execute(ctx.conn.as_ref())
+    .handle(command)
     .await?;
 
     Ok(Json(UserCreated { id: saved_id }))

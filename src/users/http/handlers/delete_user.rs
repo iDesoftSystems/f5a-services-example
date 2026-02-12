@@ -3,6 +3,7 @@ use crate::error::ApiError;
 use crate::users::application::commands;
 use axum::extract::{Path, State};
 use axum::response::NoContent;
+use std::sync::Arc;
 
 #[utoipa::path(
     delete,
@@ -21,9 +22,13 @@ pub async fn delete_user(
     State(ctx): State<AppContext>,
     Path(user_id): Path<i32>,
 ) -> Result<NoContent, ApiError> {
-    commands::DeleteUserCommand { user_id }
-        .execute(ctx.conn.as_ref())
-        .await?;
+    let command = commands::DeleteUserCommand { user_id };
+
+    commands::DeleteUserCommandHandler {
+        conn: Arc::clone(&ctx.conn),
+    }
+    .handle(command)
+    .await?;
 
     Ok(NoContent)
 }

@@ -1,11 +1,13 @@
 use crate::context::AppContext;
 use crate::error::ApiError;
 use crate::response::ProblemDetails;
+use crate::users::application::commands;
 use crate::users::application::commands::PartialUpdateUserCommand;
 use crate::users::http::om::PartialUserParams;
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::response::NoContent;
+use std::sync::Arc;
 
 #[utoipa::path(
     patch,
@@ -26,12 +28,16 @@ pub async fn partial_update_user(
     Path(user_id): Path<i32>,
     Json(payload): Json<PartialUserParams>,
 ) -> Result<NoContent, ApiError> {
-    PartialUpdateUserCommand {
+    let command = PartialUpdateUserCommand {
         user_id,
         username: payload.username,
         disabled: payload.disabled,
+    };
+
+    commands::PartialUpdateUserCommandHandler {
+        conn: Arc::clone(&ctx.conn),
     }
-    .execute(ctx.conn.as_ref())
+    .handle(command)
     .await?;
 
     Ok(NoContent)
