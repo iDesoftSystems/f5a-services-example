@@ -1,6 +1,7 @@
 use crate::context::AppContext;
 use crate::error::ApiError;
 use crate::users::application::commands;
+use crate::users::persistence::uow::UnitOfWorkFactory;
 use axum::extract::{Path, State};
 use axum::response::NoContent;
 use std::sync::Arc;
@@ -25,7 +26,7 @@ pub async fn delete_user(
     let command = commands::DeleteUserCommand { user_id };
 
     commands::DeleteUserCommandHandler {
-        conn: Arc::clone(&ctx.conn),
+        uow_factory: UnitOfWorkFactory::new(Arc::clone(&ctx.conn)),
     }
     .handle(command)
     .await?;

@@ -1,11 +1,9 @@
-use std::sync::Arc;
-
-use sea_orm::DatabaseConnection;
-use sea_orm::{ActiveModelTrait, ActiveValue, sqlx::types::chrono::Utc};
+use sea_orm::ActiveValue;
+use sea_orm::sqlx::types::chrono::Utc;
 use validator::Validate;
 
 use crate::error::ApiError;
-use crate::users::persistence;
+use crate::users::persistence::uow::{UnitOfWork, UnitOfWorkFactory};
 
 #[derive(Validate, Debug)]
 pub struct CreateUserCommand {
@@ -40,7 +38,7 @@ pub struct CreateUserCommand {
 }
 
 pub struct CreateUserCommandHandler {
-    pub conn: Arc<DatabaseConnection>,
+    pub uow_factory: UnitOfWorkFactory,
 }
 
 impl CreateUserCommandHandler {
@@ -49,7 +47,12 @@ impl CreateUserCommandHandler {
 
         command.validate()?;
 
-        if persistence::dao::find_user_by_username(self.conn.as_ref(), &command.username)
+        let uow = self.uow_factory.begin().await?;
+
+        let user_repo = uow.user_repository();
+
+        if user_repo
+            .find_by_username(&command.username)
             .await?
             .is_some()
         {
@@ -59,16 +62,18 @@ impl CreateUserCommandHandler {
         }
 
         let current_user_id = 1;
-        let user_model = schemas::user::ActiveModel {
+        let user_am = schemas::user::ActiveModel {
             id: ActiveValue::NotSet,
             username: ActiveValue::Set(command.username),
             password: ActiveValue::Set("password".into()),
             disabled: ActiveValue::Set(true.into()),
             created_at: ActiveValue::Set(Utc::now().naive_utc()),
             creator_id: ActiveValue::Set(current_user_id),
-        }
-        .insert(self.conn.as_ref())
-        .await?;
+        };
+
+        let user_model = user_repo.insert(user_am).await?;
+
+        uow.commit().await?;
 
         tracing::info!(user_id = user_model.id, "created user");
 

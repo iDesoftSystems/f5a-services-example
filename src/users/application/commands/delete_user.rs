@@ -1,24 +1,28 @@
-use sea_orm::{DatabaseConnection, EntityTrait, ModelTrait};
-use std::sync::Arc;
-
 use crate::error::ApiError;
+use crate::users::persistence::uow::{UnitOfWork, UnitOfWorkFactory};
 
 pub struct DeleteUserCommand {
     pub user_id: i32,
 }
 
 pub struct DeleteUserCommandHandler {
-    pub conn: Arc<DatabaseConnection>,
+    pub uow_factory: UnitOfWorkFactory,
 }
 
 impl DeleteUserCommandHandler {
     pub async fn handle(self, command: DeleteUserCommand) -> Result<(), ApiError> {
-        let user_model = schemas::user::Entity::find_by_id(command.user_id)
-            .one(self.conn.as_ref())
+        let uow = self.uow_factory.begin().await?;
+
+        let user_repo = uow.user_repository();
+
+        let user_model = user_repo
+            .find_by_id(command.user_id)
             .await?
             .ok_or(ApiError::NotFound)?;
 
-        user_model.delete(self.conn.as_ref()).await?;
+        user_repo.delete(user_model).await?;
+
+        uow.commit().await?;
 
         tracing::info!(user_id = command.user_id, "deleted user");
 

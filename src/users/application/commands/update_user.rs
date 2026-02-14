@@ -1,9 +1,8 @@
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, IntoActiveModel};
-use std::sync::Arc;
+use sea_orm::{ActiveValue, IntoActiveModel};
 use validator::Validate;
 
 use crate::error::ApiError;
-use crate::users::persistence;
+use crate::users::persistence::uow::{UnitOfWork, UnitOfWorkFactory};
 
 #[derive(Validate)]
 pub struct UpdateUserCommand {
@@ -18,14 +17,19 @@ pub struct UpdateUserCommand {
 }
 
 pub struct UpdateUserCommandHandler {
-    pub conn: Arc<DatabaseConnection>,
+    pub uow_factory: UnitOfWorkFactory,
 }
 
 impl UpdateUserCommandHandler {
     pub async fn handle(self, command: UpdateUserCommand) -> Result<(), ApiError> {
         command.validate()?;
 
-        let user_model = persistence::dao::find_user_by_id(self.conn.as_ref(), command.user_id)
+        let uow = self.uow_factory.begin().await?;
+
+        let user_repo = uow.user_repository();
+
+        let user_model = user_repo
+            .find_by_id(command.user_id)
             .await?
             .ok_or(ApiError::NotFound)?;
 
@@ -33,7 +37,9 @@ impl UpdateUserCommandHandler {
         user_am.username = ActiveValue::Set(command.username);
         user_am.disabled = ActiveValue::Set(command.disabled.into());
 
-        user_am.update(self.conn.as_ref()).await?;
+        user_repo.update(user_am).await?;
+
+        uow.commit().await?;
 
         tracing::info!(user_id = command.user_id, "updated user");
 

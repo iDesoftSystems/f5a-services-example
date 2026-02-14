@@ -3,6 +3,7 @@ use crate::error::ApiError;
 use crate::response::ProblemDetails;
 use crate::users::application::commands::{self, CreateUserCommandHandler};
 use crate::users::http::om::{CreateUserParams, UserCreated};
+use crate::users::persistence::uow::UnitOfWorkFactory;
 use axum::Json;
 use axum::extract::State;
 use std::sync::Arc;
@@ -33,7 +34,7 @@ pub async fn create_user(
     };
 
     let saved_id = CreateUserCommandHandler {
-        conn: Arc::clone(&ctx.conn),
+        uow_factory: UnitOfWorkFactory::new(Arc::clone(&ctx.conn)),
     }
     .handle(command)
     .await?;

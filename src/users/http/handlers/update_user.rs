@@ -3,6 +3,7 @@ use crate::error::ApiError;
 use crate::response::ProblemDetails;
 use crate::users::application::commands;
 use crate::users::http::om::UpdateUserParams;
+use crate::users::persistence::uow::UnitOfWorkFactory;
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::response::NoContent;
@@ -34,7 +35,7 @@ pub async fn update_user(
     };
 
     commands::UpdateUserCommandHandler {
-        conn: Arc::clone(&ctx.conn),
+        uow_factory: UnitOfWorkFactory::new(Arc::clone(&ctx.conn)),
     }
     .handle(command)
     .await?;

@@ -1,8 +1,7 @@
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, IntoActiveModel};
-use std::sync::Arc;
+use sea_orm::{ActiveValue, IntoActiveModel};
 
 use crate::error::ApiError;
-use crate::users::persistence;
+use crate::users::persistence::uow::{UnitOfWork, UnitOfWorkFactory};
 
 pub struct PartialUpdateUserCommand {
     pub user_id: i32,
@@ -11,12 +10,17 @@ pub struct PartialUpdateUserCommand {
 }
 
 pub struct PartialUpdateUserCommandHandler {
-    pub conn: Arc<DatabaseConnection>,
+    pub uow_factory: UnitOfWorkFactory,
 }
 
 impl PartialUpdateUserCommandHandler {
     pub async fn handle(self, command: PartialUpdateUserCommand) -> Result<(), ApiError> {
-        let user_model = persistence::dao::find_user_by_id(self.conn.as_ref(), command.user_id)
+        let uow = self.uow_factory.begin().await?;
+
+        let user_repo = uow.user_repository();
+
+        let user_model = user_repo
+            .find_by_id(command.user_id)
             .await?
             .ok_or(ApiError::NotFound)?;
 
@@ -29,7 +33,9 @@ impl PartialUpdateUserCommandHandler {
             user_am.disabled = ActiveValue::Set(disabled.into());
         }
 
-        user_am.update(self.conn.as_ref()).await?;
+        user_repo.update(user_am).await?;
+
+        uow.commit().await?;
 
         tracing::info!(user_id = command.user_id, "updated user");
 

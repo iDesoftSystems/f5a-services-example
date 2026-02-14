@@ -4,6 +4,7 @@ use crate::response::ProblemDetails;
 use crate::users::application::commands;
 use crate::users::application::commands::PartialUpdateUserCommand;
 use crate::users::http::om::PartialUserParams;
+use crate::users::persistence::uow::UnitOfWorkFactory;
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::response::NoContent;
@@ -35,7 +36,7 @@ pub async fn partial_update_user(
     };
 
     commands::PartialUpdateUserCommandHandler {
-        conn: Arc::clone(&ctx.conn),
+        uow_factory: UnitOfWorkFactory::new(Arc::clone(&ctx.conn)),
     }
     .handle(command)
     .await?;
