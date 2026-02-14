@@ -1,4 +1,4 @@
-use crate::error::ApiError;
+use crate::shared::error::ApiError;
 use crate::users::http::om::UserDetail;
 use crate::users::persistence;
 use sea_orm::DatabaseConnection;

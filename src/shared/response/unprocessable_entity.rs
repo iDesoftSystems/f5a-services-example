@@ -1,6 +1,6 @@
 use axum::{Json, http::StatusCode, response::IntoResponse};
 
-use crate::response::ProblemDetails;
+use crate::shared::response::ProblemDetails;
 
 pub struct UnprocessableEntity(pub String);
 

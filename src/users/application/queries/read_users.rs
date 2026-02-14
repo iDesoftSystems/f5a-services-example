@@ -1,5 +1,5 @@
-use crate::error::ApiError;
-use crate::pagination::Pagination;
+use crate::shared::error::ApiError;
+use crate::shared::pagination::Pagination;
 use crate::users::http::om::UserPage;
 use crate::users::persistence;
 use sea_orm::DatabaseConnection;

@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use axum::{Json, http::StatusCode, response::IntoResponse};
 use validator::{ValidationError, ValidationErrors};
 
-use crate::response::{Field, ProblemDetails};
+use crate::shared::response::{Field, ProblemDetails};
 
 const INVALID_DEFAULT_MESSAGE: Cow<'static, str> = Cow::Borrowed("Invalid information");
 

@@ -1,7 +1,7 @@
 use sea_orm::{ActiveValue, IntoActiveModel};
 use validator::Validate;
 
-use crate::error::ApiError;
+use crate::shared::error::ApiError;
 use crate::users::persistence::uow::{UnitOfWork, UnitOfWorkFactory};
 
 #[derive(Validate)]

@@ -1,4 +1,4 @@
-use crate::error::ApiError;
+use crate::shared::error::ApiError;
 use crate::users::persistence::uow::{UnitOfWork, UnitOfWorkFactory};
 
 pub struct DeleteUserCommand {

@@ -1,5 +1,5 @@
-use crate::context::AppContext;
-use crate::error::ApiError;
+use crate::shared::context::AppContext;
+use crate::shared::error::ApiError;
 use crate::users::application::commands;
 use crate::users::persistence::uow::UnitOfWorkFactory;
 use axum::extract::{Path, State};

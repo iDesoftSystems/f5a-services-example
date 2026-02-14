@@ -2,7 +2,7 @@ use sea_orm::ActiveValue;
 use sea_orm::sqlx::types::chrono::Utc;
 use validator::Validate;
 
-use crate::error::ApiError;
+use crate::shared::error::ApiError;
 use crate::users::persistence::uow::{UnitOfWork, UnitOfWorkFactory};
 
 #[derive(Validate, Debug)]
@@ -30,7 +30,7 @@ pub struct CreateUserCommand {
     #[validate(range(min = 18, max = 100, message = "Age must be between 18 and 100"))]
     pub age: u8,
 
-    #[validate(custom(function = "crate::validators::password_strength"))]
+    #[validate(custom(function = "crate::shared::validators::password_strength"))]
     pub password: String,
 
     #[validate(must_match(other = "password", message = "Passwords do not match"))]

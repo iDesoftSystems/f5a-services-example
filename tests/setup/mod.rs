@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use f5a_services::{context::AppContext, routes};
+use f5a_services::{routes, shared::context::AppContext};
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection};
 
 pub struct TestContext {

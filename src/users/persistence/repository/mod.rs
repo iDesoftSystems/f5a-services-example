@@ -1,6 +1,6 @@
 use sea_orm::{ActiveModelTrait, ConnectionTrait, DbErr, DeleteResult, ModelTrait};
 
-use crate::pagination::Pagination;
+use crate::shared::pagination::Pagination;
 use crate::users::persistence::dao;
 
 pub struct UserRepository<'a, C: ConnectionTrait> {

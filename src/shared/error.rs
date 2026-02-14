@@ -2,7 +2,7 @@ use axum::{http::StatusCode, response::IntoResponse};
 use sea_orm::DbErr;
 use validator::ValidationErrors;
 
-use crate::response::{BadRequest, UnprocessableEntity};
+use crate::shared::response::{BadRequest, UnprocessableEntity};
 
 pub enum ApiError {
     Unexpected(Box<dyn std::error::Error + Send + Sync>),

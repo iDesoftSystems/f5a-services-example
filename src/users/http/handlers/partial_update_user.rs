@@ -1,6 +1,6 @@
-use crate::context::AppContext;
-use crate::error::ApiError;
-use crate::response::ProblemDetails;
+use crate::shared::context::AppContext;
+use crate::shared::error::ApiError;
+use crate::shared::response::ProblemDetails;
 use crate::users::application::commands;
 use crate::users::application::commands::PartialUpdateUserCommand;
 use crate::users::http::om::PartialUserParams;

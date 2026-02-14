@@ -1,7 +1,7 @@
 use serde::Serialize;
 use utoipa::ToSchema;
 
-use crate::response::Field;
+use crate::shared::response::Field;
 
 #[derive(Serialize, ToSchema)]
 pub struct ProblemDetails {

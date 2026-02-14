@@ -2,7 +2,7 @@ use sea_orm::{
     ColumnTrait, ConnectionTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
 };
 
-use crate::pagination::Pagination;
+use crate::shared::pagination::Pagination;
 
 pub async fn find_all_users_paginated(
     client: &impl ConnectionTrait,

@@ -1,5 +1,5 @@
-use crate::context::AppContext;
-use crate::error::ApiError;
+use crate::shared::context::AppContext;
+use crate::shared::error::ApiError;
 use crate::users::application::queries;
 use crate::users::application::queries::ReadUserQuery;
 use crate::users::http::om::UserDetail;

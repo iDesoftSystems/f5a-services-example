@@ -1,6 +1,6 @@
-use crate::context::AppContext;
-use crate::error::ApiError;
-use crate::pagination::Pagination;
+use crate::shared::context::AppContext;
+use crate::shared::error::ApiError;
+use crate::shared::pagination::Pagination;
 use crate::users::application::queries;
 use crate::users::application::queries::ReadUsersQuery;
 use crate::users::http::om::UserPage;

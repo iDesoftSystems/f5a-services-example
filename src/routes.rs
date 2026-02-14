@@ -2,7 +2,7 @@ use utoipa::OpenApi;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use utoipa_swagger_ui::SwaggerUi;
 
-use crate::{context::AppContext, root, users};
+use crate::{root, shared::context::AppContext, users};
 
 #[derive(OpenApi)]
 #[openapi(
