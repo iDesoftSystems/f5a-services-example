@@ -31,6 +31,7 @@ tower = { version = "0.5.2", features = ["util"] }
 utoipa = { version = "5.4.0", features = ["axum_extras", "chrono"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 utoipa-axum = { version = "0.2.0" }
+thiserror = { version = "2.0.18" }
 
 [dependencies]
 tokio = { workspace = true }
@@ -48,6 +49,7 @@ tower-http = { workspace = true }
 utoipa = { workspace = true }
 utoipa-swagger-ui = { workspace = true }
 utoipa-axum = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 tower = { workspace = true }

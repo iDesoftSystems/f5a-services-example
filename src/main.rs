@@ -2,6 +2,7 @@ use axum::http::header::{AUTHORIZATION, CONTENT_TYPE};
 use axum::http::{HeaderName, HeaderValue};
 use f5a_services::routes;
 use f5a_services::shared::context::AppContext;
+use f5a_services::shared::trace::RequestIdSpan;
 use sea_orm::Database;
 use std::sync::Arc;
 use std::{env, net::SocketAddr};
@@ -9,7 +10,7 @@ use tower::ServiceBuilder;
 use tower_http::cors::{self, CorsLayer};
 use tower_http::propagate_header::PropagateHeaderLayer;
 use tower_http::request_id::{MakeRequestUuid, SetRequestIdLayer};
-use tower_http::trace::{DefaultMakeSpan, TraceLayer};
+use tower_http::trace::TraceLayer;
 
 #[tokio::main]
 async fn main() {
@@ -34,10 +35,7 @@ async fn main() {
 
     let service_layers = ServiceBuilder::new()
         .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::default().include_headers(true)),
-        )
+        .layer(TraceLayer::new_for_http().make_span_with(RequestIdSpan))
         .layer(PropagateHeaderLayer::new(HeaderName::from_static(
             "x-request-id",
         )));

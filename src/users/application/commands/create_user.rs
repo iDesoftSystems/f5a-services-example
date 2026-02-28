@@ -43,8 +43,6 @@ pub struct CreateUserCommandHandler {
 
 impl CreateUserCommandHandler {
     pub async fn handle(&self, command: CreateUserCommand) -> Result<i32, ApiError> {
-        tracing::info!("creating a new user");
-
         command.validate()?;
 
         let uow = self.uow_factory.begin().await?;

@@ -1,13 +1,22 @@
 use axum::{http::StatusCode, response::IntoResponse};
 use sea_orm::DbErr;
+use thiserror::Error;
 use validator::ValidationErrors;
 
 use crate::shared::response::{BadRequest, UnprocessableEntity};
 
+#[derive(Error, Debug)]
 pub enum ApiError {
+    #[error(transparent)]
     Unexpected(Box<dyn std::error::Error + Send + Sync>),
+
+    #[error("Not Found")]
     NotFound,
+
+    #[error(transparent)]
     Validation(ValidationErrors),
+
+    #[error("{0}")]
     UnprocessableEntity(String),
 }
 

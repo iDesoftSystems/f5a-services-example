@@ -18,7 +18,7 @@ use std::sync::Arc;
         (status = BAD_REQUEST, body = ProblemDetails),
     )
 )]
-#[tracing::instrument(skip(ctx))]
+#[tracing::instrument(skip(ctx), err)]
 pub async fn create_user(
     State(ctx): State<AppContext>,
     Json(payload): Json<CreateUserParams>,
