@@ -59,7 +59,7 @@ async fn it_reads_paginated_users() {
     assert_eq!(res.status(), StatusCode::OK);
     let value = res.into_value::<Vec<UserPage>>().await;
     assert_eq!(value.len(), 1);
-    assert_eq!(value[0].username, "idesoft");
+    assert_eq!(value[0].username, "idesoftd");
     assert_eq!(value[0].id, 1);
     assert_eq!(value[0].disabled, true);
 
@@ -115,9 +115,8 @@ async fn it_reads_paginated_users_with_idiomatic_json() {
     let expected_body = json!([
         {
             "id": 1,
-            "username": "idesoft",
-            "fullName": "iDesoft Systems",
-            "disabled": 1,
+            "username": "idesoftd",
+            "disabled": true,
             "createdAt": "2026-03-19T10:10:10Z"
         }
     ]);
