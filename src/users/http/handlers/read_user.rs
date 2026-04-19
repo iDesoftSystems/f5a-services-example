@@ -11,13 +11,18 @@ use std::sync::Arc;
     get,
     path = "/api/users/{user_id}",
     tag = "user",
+    summary = "Get user by ID",
+    description = r#"
+## Use Case
+Retrieves detailed information for a specific user by their unique ID.
+"#,
     params(
-        ("user_id"=i32, Path, description = "User item unique id")
+        ("user_id"=i32, Path, description = "The unique identifier of the user")
     ),
     responses(
-        (status = OK, body = UserDetail),
-        (status = NOT_FOUND, description = "User was not found"),
-        (status = INTERNAL_SERVER_ERROR),
+        (status = OK, body = UserDetail, description = "Returns the user's detailed information"),
+        (status = NOT_FOUND, description = "User not found with the given ID"),
+        (status = INTERNAL_SERVER_ERROR, description = "Internal server error"),
     )
 )]
 pub async fn read_user(

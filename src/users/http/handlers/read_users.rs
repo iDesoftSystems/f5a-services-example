@@ -12,12 +12,17 @@ use std::sync::Arc;
     get,
     path = "/api/users",
     tag = "user",
+    summary = "List all users (paginated)",
+    description = r#"
+## Use Case
+Retrieves a paginated list of users from the system.
+"#,
     params(
         Pagination
     ),
     responses(
-        (status=OK, body = [UserPage], description = "Get all users paginated"),
-        (status = INTERNAL_SERVER_ERROR),
+        (status=OK, body = [UserPage], description = "Returns array of user summaries"),
+        (status = INTERNAL_SERVER_ERROR, description = "Internal server error"),
     )
 )]
 pub async fn read_users(

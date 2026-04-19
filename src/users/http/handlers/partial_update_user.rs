@@ -14,13 +14,18 @@ use std::sync::Arc;
     patch,
     path = "/api/users/{user_id}",
     tag = "user",
+    summary = "Partially update a user",
+    description = r#"
+## Use Case
+Partially updates an existing user. Only provide fields that need to be changed.
+"#,
     params(
-        ("user_id"=i32, Path, description = "User item unique id")
+        ("user_id"=i32, Path, description = "The unique identifier of the user to update")
     ),
     responses(
-        (status = NO_CONTENT),
-        (status = INTERNAL_SERVER_ERROR),
-        (status = BAD_REQUEST, body = ProblemDetails),
+        (status = NO_CONTENT, description = "User updated successfully"),
+        (status = BAD_REQUEST, body = ProblemDetails, description = "Invalid request body or validation error"),
+        (status = INTERNAL_SERVER_ERROR, description = "Internal server error"),
     )
 )]
 #[tracing::instrument(skip(ctx))]

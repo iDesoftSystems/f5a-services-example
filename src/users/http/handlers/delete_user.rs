@@ -10,12 +10,17 @@ use std::sync::Arc;
     delete,
     path = "/api/users/{user_id}",
     tag = "user",
+    summary = "Delete a user",
+    description = r#"
+## Use Case
+Permanently deletes a user from the system.
+"#,
     params(
-        ("user_id"=i32, Path, description = "User item unique id")
+        ("user_id"=i32, Path, description = "The unique identifier of the user to delete")
     ),
     responses(
-        (status = NO_CONTENT),
-        (status = INTERNAL_SERVER_ERROR),
+        (status = NO_CONTENT, description = "User deleted successfully"),
+        (status = INTERNAL_SERVER_ERROR, description = "Internal server error"),
     )
 )]
 #[tracing::instrument(skip(ctx))]

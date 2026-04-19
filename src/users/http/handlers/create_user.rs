@@ -12,10 +12,15 @@ use std::sync::Arc;
     post,
     path = "/api/users",
     tag = "user",
+    summary = "Create a new user",
+    description = r#"
+## Use Case
+Creates a new user in the system with the provided credentials.
+"#,
     responses(
-        (status = CREATED, body=UserCreated, description = "User item created successfully"),
-        (status = INTERNAL_SERVER_ERROR),
-        (status = BAD_REQUEST, body = ProblemDetails),
+        (status = CREATED, body=UserCreated, description = "User created successfully"),
+        (status = INTERNAL_SERVER_ERROR, description = "Internal server error"),
+        (status = BAD_REQUEST, body = ProblemDetails, description = "Validation failed"),
     )
 )]
 #[tracing::instrument(skip(ctx), err)]

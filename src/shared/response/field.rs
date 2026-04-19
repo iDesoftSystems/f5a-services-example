@@ -3,8 +3,13 @@ use utoipa::ToSchema;
 
 #[derive(Serialize, ToSchema)]
 pub struct Field {
+    #[schema(example = "username")]
     pub field: String,
+
+    #[schema(example = "must be unique")]
     pub reason: String,
+
+    #[schema(example = "unique")]
     pub code: String,
 }
 

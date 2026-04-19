@@ -6,9 +6,32 @@ use crate::{root, shared::context::AppContext, users};
 
 #[derive(OpenApi)]
 #[openapi(
-    info(description = "f5a services"),
+    info(
+        title = "F5A Services API",
+        description = r#"
+## Overview
+REST API for F5A.
+
+## Authentication
+Currently no authentication required (internal service).
+        "#,
+        version = "1.0.0"
+    ),
+    components(
+        schemas(
+            crate::shared::pagination::Pagination,
+            crate::shared::response::ProblemDetails,
+            crate::shared::response::Field,
+            crate::users::http::om::CreateUserParams,
+            crate::users::http::om::UserCreated,
+            crate::users::http::om::UserPage,
+            crate::users::http::om::UserDetail,
+            crate::users::http::om::UpdateUserParams,
+            crate::users::http::om::PartialUserParams,
+        )
+    ),
     tags(
-        (name = "user", description="User API endpoints")
+        (name = "user", description = "User management operations: create, read, update, delete users")
     )
 )]
 pub struct ApiDoc;
