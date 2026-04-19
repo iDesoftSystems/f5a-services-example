@@ -1,6 +1,13 @@
 # F5a Services
 
-This repository includes the sample code developed during the [Web Service Development](https://www.youtube.com/playlist?list=PLSLcKcqBWfjJut_tXCtnMS8l54P2YoEoM) course, covering the following topics.
+This repository includes the sample code developed during the *Web Service Development* course.
+
+## Video Lessons
+
+- Italiano: [Guarda la Playlist su YouTube](https://www.youtube.com/playlist?list=PLSLcKcqBWfjJut_tXCtnMS8l54P2YoEoM)
+- Español: [Mira la Playlist en YouTube](https://www.youtube.com/playlist?list=PL8aBwUBHv2TjgSyC0kZN7it0-psGrccOs)
+
+## Curriculum Overview
 
 - Module 1: Introduction to Web APIs and the Rust Ecosystem
 - Module 2: Axum - Creating Your First Web Server
