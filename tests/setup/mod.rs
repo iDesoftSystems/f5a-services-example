@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use f5a_services::shared::env::AppEnvironment;
 use f5a_services::{routes, shared::context::AppContext};
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection};
 
@@ -28,7 +29,7 @@ impl TestContext {
     }
 
     pub fn configure(&self) -> axum::Router {
-        routes::router().with_state(AppContext {
+        routes::router(AppEnvironment::Dev).with_state(AppContext {
             conn: Arc::clone(&self.db),
         })
     }

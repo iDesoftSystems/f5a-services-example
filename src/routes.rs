@@ -2,7 +2,7 @@ use utoipa::OpenApi;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use utoipa_swagger_ui::SwaggerUi;
 
-use crate::{root, shared::context::AppContext, users};
+use crate::{root, shared::context::AppContext, shared::env::AppEnvironment, users};
 
 #[derive(OpenApi)]
 #[openapi(
@@ -36,7 +36,7 @@ Currently no authentication required (internal service).
 )]
 pub struct ApiDoc;
 
-pub fn router() -> axum::Router<AppContext> {
+pub fn router(app_env: AppEnvironment) -> axum::Router<AppContext> {
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .routes(routes!(root::http::handlers::root_handler))
         .routes(routes!(
@@ -51,5 +51,9 @@ pub fn router() -> axum::Router<AppContext> {
         ))
         .split_for_parts();
 
-    router.merge(SwaggerUi::new("/swagger-ui").url("/apidoc/openapi.json", api))
+    if app_env.is_swagger_ui_enabled() {
+        router.merge(SwaggerUi::new("/swagger-ui").url("/apidoc/openapi.json", api))
+    } else {
+        router
+    }
 }

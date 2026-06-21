@@ -2,6 +2,7 @@ use axum::http::header::{AUTHORIZATION, CONTENT_TYPE};
 use axum::http::{HeaderName, HeaderValue};
 use f5a_services::routes;
 use f5a_services::shared::context::AppContext;
+use f5a_services::shared::env::AppEnvironment;
 use f5a_services::shared::trace::RequestIdSpan;
 use sea_orm::Database;
 use std::sync::Arc;
@@ -44,7 +45,12 @@ async fn main() {
         conn: Arc::new(conn),
     };
 
-    let router = routes::router()
+    let app_env: AppEnvironment = env::var("APP_ENVIRONMENT")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or_default();
+
+    let router = routes::router(app_env)
         .with_state(app_ctx)
         .layer(service_layers)
         .layer(
