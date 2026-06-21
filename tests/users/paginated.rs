@@ -33,7 +33,7 @@ async fn it_reads_paginated_users() {
     assert_eq!(value.len(), 1);
     assert_eq!(value[0].username, "chameleon");
     assert_eq!(value[0].id, 3);
-    assert_eq!(value[0].disabled, false);
+    assert!(!value[0].disabled);
 
     // assert for page 1
     let app: axum::Router = ctx.configure();
@@ -47,7 +47,7 @@ async fn it_reads_paginated_users() {
     assert_eq!(value.len(), 1);
     assert_eq!(value[0].username, "bluebird");
     assert_eq!(value[0].id, 2);
-    assert_eq!(value[0].disabled, false);
+    assert!(!value[0].disabled);
 
     // assert for page 2
     let app: axum::Router = ctx.configure();
@@ -61,7 +61,7 @@ async fn it_reads_paginated_users() {
     assert_eq!(value.len(), 1);
     assert_eq!(value[0].username, "idesoftd");
     assert_eq!(value[0].id, 1);
-    assert_eq!(value[0].disabled, true);
+    assert!(value[0].disabled);
 
     // assert for page 3
     let app: axum::Router = ctx.configure();

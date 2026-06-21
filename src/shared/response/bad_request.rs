@@ -38,7 +38,7 @@ impl IntoFields for ValidationErrors {
             Field::new(&field_name, field_message, &error.code)
         }));
 
-        fields.sort_by(|a, b| a.field.to_lowercase().cmp(&b.field.to_lowercase()));
+        fields.sort_by_key(|a| a.field.to_lowercase());
 
         fields
     }
