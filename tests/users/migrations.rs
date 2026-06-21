@@ -4,7 +4,7 @@ use sea_orm::{ActiveModelTrait, ActiveValue, ConnectionTrait, DbErr};
 pub async fn insert_idesoft_user(
     conn: &impl ConnectionTrait,
 ) -> Result<schemas::user::ActiveModel, DbErr> {
-    let created_at = NaiveDate::from_ymd_opt(2026, 03, 19)
+    let created_at = NaiveDate::from_ymd_opt(2026, 3, 19)
         .and_then(|date| date.and_hms_opt(10, 10, 10))
         .unwrap();
 
@@ -23,7 +23,7 @@ pub async fn insert_idesoft_user(
 pub async fn insert_blue_bird_user(
     conn: &impl ConnectionTrait,
 ) -> Result<schemas::user::ActiveModel, DbErr> {
-    let created_at = NaiveDate::from_ymd_opt(2026, 03, 19)
+    let created_at = NaiveDate::from_ymd_opt(2026, 3, 19)
         .and_then(|date| date.and_hms_opt(10, 10, 10))
         .unwrap();
 

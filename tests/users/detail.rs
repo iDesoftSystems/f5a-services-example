@@ -29,7 +29,7 @@ async fn test_read_user_detail() {
     let value = res.into_value::<UserDetail>().await;
     assert_eq!(value.id, 1);
     assert_eq!(value.username, "idesoftd");
-    assert_eq!(value.disabled, true);
+    assert!(value.disabled);
 }
 
 #[tokio::test]
